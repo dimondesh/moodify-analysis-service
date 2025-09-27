@@ -1,15 +1,11 @@
-# --- Базовый образ ---
-    FROM python:3.9-slim
+# --- Базовый образ с Essentia ---
+    # Используем официальный образ Essentia для максимальной совместимости
+    FROM ghcr.io/mtg/essentia:latest
 
-    # --- Установка системных зависимостей ---
-    # Essentia требует некоторые системные библиотеки для работы с аудио
+    # --- Установка дополнительных системных зависимостей ---
+    # Essentia уже включает все необходимые библиотеки, но добавим Flask зависимости
     RUN apt-get update && apt-get install -y --no-install-recommends \
-        ffmpeg \
-        libavformat-dev \
-        libavcodec-dev \
-        libavutil-dev \
-        libswresample-dev \
-        # libavresample-dev удален, так как он устарел
+        python3-pip \
         && rm -rf /var/lib/apt/lists/*
     
     # --- Настройка рабочей директории ---
@@ -17,7 +13,7 @@
     
     # --- Копирование и установка Python-зависимостей ---
     COPY requirements.txt .
-    RUN pip install --no-cache-dir -r requirements.txt
+    RUN pip3 install --no-cache-dir -r requirements.txt
     
     # --- Копирование кода приложения ---
     COPY . .
